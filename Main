@@ -1,0 +1,33 @@
+from selenium import webdriver
+from selenium.webdriver.common.action_chains import ActionChains
+import keyboard
+
+#Set up
+PATH = "C:\\Users\\netan\\Downloads\\chromedriver-win64\\chromedriver.exe"
+driver = webdriver.Chrome(PATH)
+driver.get("https://orteil.dashnet.org/cookieclicker/")
+driver.implicitly_wait(8)
+
+# Find the big cookie element, the cookie count element, and the price elements for each item
+cookie = driver.find_element_by_id("bigCookie") # Cookie in center screen.
+cookie_count = driver.find_element_by_id("cookies") # Count
+items = [driver.find_element_by_id("productPrice" + str(i)) for i in range(1, -1, -1)] # list of items
+
+actions = ActionChains(driver)
+
+print("press 'b' key to break.")
+while True:
+    actions.perform()
+    count = cookie_count.text.split(" ")[0]
+    for item in items:
+        value = int(item.text)
+        if value <= count:
+            # perform actions on the item
+            upgrade_actions = ActionChains(driver)
+            upgrade_actions.move_to_element(item) # Move the cursor to the item to reveal the Buy button
+            upgrade_actions.click() # Buy
+            upgrade_actions.perform() # Upgrade
+    # Check if the b key is pressed to break
+    if keyboard.is_pressed('b'):
+        print("The 'b' key is pressed. Stopping the loop.")
+        break
